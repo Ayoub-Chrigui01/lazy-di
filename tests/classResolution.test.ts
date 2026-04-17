@@ -110,7 +110,7 @@ describe("Success", () => {
     class ExtendedService extends BaseService {
       constructor(
         public database: Database,
-        config: Config,
+        public config: Config,
       ) {
         super(config);
       }
