@@ -6,6 +6,7 @@ describe("Success", () => {
   test("Resolves the correct implementation when `container.get(AbstractClass)` is called directly", () => {
     abstract class Repository {}
 
+    @Injectable()
     @Implements(Repository)
     class SqlRepository implements Repository {}
 
@@ -18,6 +19,7 @@ describe("Success", () => {
   test("Resolves the correct implementation when the abstract class appears as a constructor parameter mid-tree", () => {
     abstract class Repository {}
 
+    @Injectable()
     @Implements(Repository)
     class SqlRepository implements Repository {}
 
@@ -36,6 +38,7 @@ describe("Success", () => {
   test("Resolves the correct implementation with its dependencies recursively", () => {
     abstract class Repository {}
 
+    @Injectable()
     class Config {}
 
     @Injectable()
@@ -43,6 +46,7 @@ describe("Success", () => {
       constructor(public config: Config) {}
     }
 
+    @Injectable()
     @Implements(Repository)
     class SqlRepository implements Repository {
       constructor(public logger: Logger) {}
@@ -69,8 +73,10 @@ describe("Success", () => {
   test("Resolves the concrete class directly after `@Implements` is applied to it", () => {
     abstract class Repository {}
 
+    @Injectable()
     class Logger {}
 
+    @Injectable()
     @Implements(Repository)
     class SqlRepository implements Repository {
       constructor(public logger: Logger) {}
