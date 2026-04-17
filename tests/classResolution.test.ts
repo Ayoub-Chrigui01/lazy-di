@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Container } from "../src/Container";
-import { Injectable } from "../src/decorator";
+import { Injectable } from "../src/decorators";
 
 describe("Success", () => {
   test("Must resolve a class with zero dependencies", () => {
@@ -15,7 +15,7 @@ describe("Success", () => {
   test("Must resolve a class with one dependency", () => {
     class Logger {}
 
-    @Injectable
+    @Injectable()
     class UserService {
       constructor(public logger: Logger) {}
     }
@@ -32,7 +32,7 @@ describe("Success", () => {
 
     class Database {}
 
-    @Injectable
+    @Injectable()
     class UserService {
       constructor(
         public logger: Logger,
@@ -51,12 +51,12 @@ describe("Success", () => {
   test("Must resolve a class with multiple levels of dependencies", () => {
     class Logger {}
 
-    @Injectable
+    @Injectable()
     class UserRepository {
       constructor(public logger: Logger) {}
     }
 
-    @Injectable
+    @Injectable()
     class UserService {
       constructor(public userRepository: UserRepository) {}
     }
@@ -72,7 +72,7 @@ describe("Success", () => {
   test("Must resolve a subclass with no dependencies", () => {
     class Config {}
 
-    @Injectable
+    @Injectable()
     class BaseService {
       constructor(public config: Config) {}
     }
@@ -90,14 +90,14 @@ describe("Success", () => {
   test("Must resolve a subclass with dependencies", () => {
     class Config {}
 
-    @Injectable
+    @Injectable()
     class BaseService {
       constructor(public config: Config) {}
     }
 
     class Database {}
 
-    @Injectable
+    @Injectable()
     class ExtendedService extends BaseService {
       constructor(
         public database: Database,
@@ -118,14 +118,14 @@ describe("Success", () => {
 });
 
 describe("Failure", () => {
-  test("Must throw an error when a dependency is not decorated with @Injectable with full resolution path", () => {
+  test("Must throw an error when a dependency is not decorated with @Injectable() with full resolution path", () => {
     class Config {}
 
     class Logger {
       constructor(public config: Config) {}
     }
 
-    @Injectable
+    @Injectable()
     class UserService {
       constructor(public logger: Logger) {}
     }
@@ -133,7 +133,7 @@ describe("Failure", () => {
     const container = new Container();
 
     expect(() => container.get(UserService)).toThrow(
-      "Cannot resolve dependency Logger. Make sure it is decorated with @Injectable.",
+      "Cannot resolve dependency Logger. Make sure it is decorated with @Injectable().",
     );
   });
 });
