@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import { Container } from "../src/Container";
-import { Implements, Injectable } from "../src/decorators";
+import { Abstract, Implements, Injectable } from "../src/decorators";
 
 describe("Success", () => {
   test("Resolves the correct implementation when `container.get(AbstractClass)` is called directly", () => {
+    @Abstract()
     abstract class Repository {}
 
     @Injectable()
@@ -17,6 +18,7 @@ describe("Success", () => {
   });
 
   test("Resolves the correct implementation when the abstract class appears as a constructor parameter mid-tree", () => {
+    @Abstract()
     abstract class Repository {}
 
     @Injectable()
@@ -36,6 +38,7 @@ describe("Success", () => {
   });
 
   test("Resolves the correct implementation with its dependencies recursively", () => {
+    @Abstract()
     abstract class Repository {}
 
     @Injectable()
@@ -71,6 +74,7 @@ describe("Success", () => {
   });
 
   test("Resolves the concrete class directly after `@Implements` is applied to it", () => {
+    @Abstract()
     abstract class Repository {}
 
     @Injectable()
@@ -90,13 +94,43 @@ describe("Success", () => {
   });
 });
 
-// describe("Failure", () => {
-//   test("Must throw a clear error if the abstract class has no implementation", () => {
-//     abstract class Repository {}
+describe("Failure", () => {
+  test("Must throw when an abstract class is not decorated with @Abstract() and another class tries to implement it", () => {
+    abstract class Repository {}
 
-//     const container = new Container();
-//     expect(() => container.get(Repository)).toThrow(
-//       `Cannot resolve dependency Repository. No implementation found.`,
-//     );
-//   });
-// });
+    expect(() => {
+      @Injectable()
+      @Implements(Repository)
+      class SqlRepository implements Repository {}
+    }).toThrow(
+      "Repository must be decorated with @Abstract() before it can be implemented by another class.",
+    );
+  });
+
+  test("Must throw a clear error if the abstract class has no implementation", () => {
+    @Abstract()
+    abstract class Repository {}
+
+    const container = new Container();
+    expect(() => container.get(Repository)).toThrow(
+      `Cannot resolve dependency Repository. No implementation found.`,
+    );
+  });
+
+  test("Must throw when multiple implementations are registered for the same abstract class", () => {
+    @Abstract()
+    abstract class Repository {}
+
+    @Injectable()
+    @Implements(Repository)
+    class SqlRepository implements Repository {}
+
+    expect(() => {
+      @Injectable()
+      @Implements(Repository)
+      class MongoRepository implements Repository {}
+    }).toThrow(
+      `MongoRepository cannot implement Repository. Repository is already implemented by SqlRepository.`,
+    );
+  });
+});

@@ -4,15 +4,23 @@ export class Container {
   constructor() {}
 
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
-    const implementation = Reflect.getMetadata("implements", dependency);
-    if (implementation) return this.get(implementation);
+    const isAbstract = Reflect.getMetadata("abstract", dependency);
+    if (isAbstract) {
+      const implementation = Reflect.getMetadata("implements", dependency);
 
-    const injectable = Reflect.getMetadata("injectable", dependency);
-    if (!injectable) {
+      if (!implementation)
+        throw new Error(
+          `Cannot resolve dependency ${dependency.name}. No implementation found.`,
+        );
+
+      return this.get(implementation);
+    }
+
+    const isInjectable = Reflect.getMetadata("injectable", dependency);
+    if (!isInjectable)
       throw new Error(
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
       );
-    }
 
     const params = Reflect.getMetadata("design:paramtypes", dependency);
 
