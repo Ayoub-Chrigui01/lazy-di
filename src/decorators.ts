@@ -2,7 +2,9 @@ import { AbstractConstructor, Constructor } from "./types";
 
 export const Injectable =
   () =>
-  <T extends Constructor>(constructor: T) => {};
+  <T extends Constructor>(constructor: T) => {
+    Reflect.defineMetadata("injectable", true, constructor);
+  };
 
 export const Implements =
   <U extends AbstractConstructor>(a: U) =>

@@ -4,6 +4,7 @@ import { Injectable } from "../src/decorators";
 
 describe("Success", () => {
   test("Must resolve a class with zero dependencies", () => {
+    @Injectable()
     class Logger {}
 
     const container = new Container();
@@ -13,6 +14,7 @@ describe("Success", () => {
   });
 
   test("Must resolve a class with one dependency", () => {
+    @Injectable()
     class Logger {}
 
     @Injectable()
@@ -28,8 +30,10 @@ describe("Success", () => {
   });
 
   test("Must resolve a class with multiple dependencies", () => {
+    @Injectable()
     class Logger {}
 
+    @Injectable()
     class Database {}
 
     @Injectable()
@@ -49,6 +53,7 @@ describe("Success", () => {
   });
 
   test("Must resolve a class with multiple levels of dependencies", () => {
+    @Injectable()
     class Logger {}
 
     @Injectable()
@@ -70,6 +75,7 @@ describe("Success", () => {
   });
 
   test("Must resolve a subclass with no dependencies", () => {
+    @Injectable()
     class Config {}
 
     @Injectable()
@@ -77,6 +83,7 @@ describe("Success", () => {
       constructor(public config: Config) {}
     }
 
+    @Injectable()
     class ExtendedService extends BaseService {}
 
     const container = new Container();
@@ -88,6 +95,7 @@ describe("Success", () => {
   });
 
   test("Must resolve a subclass with dependencies", () => {
+    @Injectable()
     class Config {}
 
     @Injectable()
@@ -95,6 +103,7 @@ describe("Success", () => {
       constructor(public config: Config) {}
     }
 
+    @Injectable()
     class Database {}
 
     @Injectable()
@@ -119,6 +128,7 @@ describe("Success", () => {
 
 describe("Failure", () => {
   test("Must throw an error when a dependency is not decorated with @Injectable() with full resolution path", () => {
+    @Injectable()
     class Config {}
 
     class Logger {
@@ -138,7 +148,6 @@ describe("Failure", () => {
   });
 
   test("Must throw an error when a dependency with zero dependencies is not decorated with @Injectable()", () => {
-    @Injectable()
     class Config {}
 
     const container = new Container();

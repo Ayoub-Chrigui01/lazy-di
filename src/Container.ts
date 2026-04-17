@@ -7,14 +7,14 @@ export class Container {
     const implementation = Reflect.getMetadata("implements", dependency);
     if (implementation) return this.get(implementation);
 
-    const params = Reflect.getMetadata("design:paramtypes", dependency);
-    const numberOfConstructorParams = dependency.length;
-
-    if (params === undefined && numberOfConstructorParams > 0) {
+    const injectable = Reflect.getMetadata("injectable", dependency);
+    if (!injectable) {
       throw new Error(
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
       );
     }
+
+    const params = Reflect.getMetadata("design:paramtypes", dependency);
 
     // @ts-ignore
     if (params === undefined) return new dependency();
