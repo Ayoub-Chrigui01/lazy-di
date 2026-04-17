@@ -136,4 +136,15 @@ describe("Failure", () => {
       "Cannot resolve dependency Logger. Make sure it is decorated with @Injectable().",
     );
   });
+
+  test("Must throw an error when a dependency with zero dependencies is not decorated with @Injectable()", () => {
+    @Injectable()
+    class Config {}
+
+    const container = new Container();
+
+    expect(() => container.get(Config)).toThrow(
+      "Cannot resolve dependency Config. Make sure it is decorated with @Injectable().",
+    );
+  });
 });
