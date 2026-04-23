@@ -7,13 +7,18 @@ export const Injectable =
   };
 
 export const Implements =
-  <U extends AbstractConstructor>(abstractClass: U) =>
+  <U extends AbstractConstructor>(
+    abstractClass: U,
+    options?: { when?: boolean },
+  ) =>
   <T extends Constructor<InstanceType<U>>>(constructor: T) => {
     const isAbstract = Reflect.getMetadata("abstract", abstractClass);
     if (!isAbstract)
       throw new Error(
         `${abstractClass.name} must be decorated with @Abstract() before it can be implemented by another class.`,
       );
+
+    if (options?.when === false) return;
 
     const implementation = Reflect.getMetadata("implements", abstractClass);
     if (implementation)

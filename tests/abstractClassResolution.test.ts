@@ -92,6 +92,44 @@ describe("Success", () => {
     expect(repository).toBeInstanceOf(SqlRepository);
     expect(repository.logger).toBeInstanceOf(Logger);
   });
+
+  test("Resolves the correct implementation if `when` option is used in `@Implements` and the condition is true", () => {
+    @Abstract()
+    abstract class Repository {}
+
+    @Injectable()
+    @Implements(Repository, { when: true })
+    class SqlRepository implements Repository {
+      constructor() {}
+    }
+
+    const container = new Container();
+    const repository = container.get(Repository);
+
+    expect(repository).toBeInstanceOf(SqlRepository);
+  });
+
+  test("Resolves the correct implementation if `when` option is used in `@Implements` and the condition is false for one implementation but true for another", () => {
+    @Abstract()
+    abstract class Repository {}
+
+    @Injectable()
+    @Implements(Repository, { when: false })
+    class SqlRepository implements Repository {
+      constructor() {}
+    }
+
+    @Injectable()
+    @Implements(Repository, { when: true })
+    class MongoRepository implements Repository {
+      constructor() {}
+    }
+
+    const container = new Container();
+    const repository = container.get(Repository);
+
+    expect(repository).toBeInstanceOf(MongoRepository);
+  });
 });
 
 describe("Failure", () => {
