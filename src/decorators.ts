@@ -1,9 +1,10 @@
-import { AbstractConstructor, Constructor } from "./types";
+import { AbstractConstructor, Constructor, Scope } from "./types";
 
 export const Injectable =
-  () =>
+  ({ scope }: { scope?: Scope } = {}) =>
   <T extends Constructor>(constructor: T) => {
     Reflect.defineMetadata("injectable", true, constructor);
+    if (scope) Reflect.defineMetadata("scope", scope, constructor);
   };
 
 export const Implements =
