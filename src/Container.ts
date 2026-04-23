@@ -1,11 +1,10 @@
-import { AnyConstructor } from "./types";
+import { AnyConstructor, Constructor } from "./types";
 
 export class Container {
   constructor() {}
 
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
-    const isAbstract = Reflect.getMetadata("abstract", dependency);
-    if (isAbstract) {
+    if (!this.isConcrete(dependency)) {
       const implementation = Reflect.getMetadata("implements", dependency);
 
       if (!implementation)
@@ -24,12 +23,16 @@ export class Container {
 
     const params = Reflect.getMetadata("design:paramtypes", dependency);
 
-    // @ts-ignore
     if (params === undefined) return new dependency();
 
     const dependencies = params.map((param: any) => this.get(param));
 
-    // @ts-ignore
     return new dependency(...dependencies);
+  }
+
+  private isConcrete<T>(
+    dependency: AnyConstructor<T>,
+  ): dependency is Constructor<T> {
+    return !Reflect.getMetadata("abstract", dependency);
   }
 }
