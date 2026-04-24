@@ -1,8 +1,11 @@
+import { validateParamTypes } from "./helpers/validateParams";
 import { AbstractConstructor, Constructor, Scope } from "./types";
 
 export const Injectable =
   ({ scope }: { scope?: Scope } = {}) =>
   <T extends Constructor>(constructor: T) => {
+    validateParamTypes(constructor);
+
     Reflect.defineMetadata("injectable", true, constructor);
     if (scope) Reflect.defineMetadata("scope", scope, constructor);
   };
