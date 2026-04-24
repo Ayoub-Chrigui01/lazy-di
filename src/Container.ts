@@ -1,17 +1,19 @@
 import { AnyConstructor, Constructor, Scope } from "./types";
 
 export class Container {
-  private defaultScope: Scope;
   private singletons = new Map<Constructor, unknown>();
 
-  private constructor({
-    defaultScope = "transient",
-  }: { defaultScope?: Scope } = {}) {
-    this.defaultScope = defaultScope;
-  }
+  private constructor(
+    private defaultScope: Scope,
+    private parent: Container | null,
+  ) {}
 
   static create(options?: { defaultScope?: Scope }): Container {
-    return new Container(options);
+    return new Container(options?.defaultScope ?? "transient", null);
+  }
+
+  createChildContainer(): Container {
+    return new Container(this.defaultScope, this);
   }
 
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
@@ -27,8 +29,8 @@ export class Container {
       return this.get(implementation);
     }
 
-    if (this.singletons.has(dependency))
-      return this.singletons.get(dependency) as InstanceType<T>;
+    const cachedInstance = this.findInstanceInSingletons(dependency);
+    if (cachedInstance !== undefined) return cachedInstance;
 
     const isInjectable = Reflect.getMetadata("injectable", dependency);
     if (!isInjectable)
@@ -39,9 +41,9 @@ export class Container {
     const instance = this.initiateDependency(dependency);
 
     const dependencyScope: Scope =
-      Reflect.getMetadata("scope", dependency) || this.defaultScope;
+      Reflect.getMetadata("scope", dependency) ?? this.defaultScope;
     if (dependencyScope === "singleton")
-      this.singletons.set(dependency, instance);
+      this.getRoot().singletons.set(dependency, instance);
 
     return instance;
   }
@@ -65,7 +67,20 @@ export class Container {
     this.singletons.set(dependency, value);
   }
 
-  // createChildContainer(): Container {}
+  private findInstanceInSingletons<T extends Constructor>(
+    dependency: T,
+  ): InstanceType<T> | undefined {
+    if (this.singletons.has(dependency))
+      return this.singletons.get(dependency) as InstanceType<T>;
+
+    if (this.parent) return this.parent.findInstanceInSingletons(dependency);
+
+    return undefined;
+  }
+
+  private getRoot(): Container {
+    return this.parent ? this.parent.getRoot() : this;
+  }
 
   private initiateDependency<T extends Constructor>(
     dependency: T,
