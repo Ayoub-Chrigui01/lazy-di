@@ -9,7 +9,8 @@ export class Container {
   }
 
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
-    if (!this.isConcrete(dependency)) {
+    const isAbstract = !this.isConcrete(dependency);
+    if (isAbstract) {
       const implementation = Reflect.getMetadata("implements", dependency);
 
       if (!implementation)
@@ -20,26 +21,36 @@ export class Container {
       return this.get(implementation);
     }
 
+    if (this.singletons.has(dependency))
+      return this.singletons.get(dependency) as InstanceType<T>;
+
     const isInjectable = Reflect.getMetadata("injectable", dependency);
     if (!isInjectable)
       throw new Error(
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
       );
 
+    const instance = this.initiateDependency(dependency);
+
     const dependencyScope: Scope =
       Reflect.getMetadata("scope", dependency) || this.defaultScope;
-
-    if (dependencyScope === "singleton") {
-      if (this.singletons.has(dependency))
-        return this.singletons.get(dependency) as InstanceType<T>;
-
-      const instance = this.initiateDependency(dependency);
+    if (dependencyScope === "singleton")
       this.singletons.set(dependency, instance);
-      return instance;
-    }
 
-    const instance = this.initiateDependency(dependency);
     return instance;
+  }
+
+  bindToConstantValue<T extends Constructor>(
+    dependency: T,
+    value: InstanceType<T>,
+  ): void {
+    const isInjectable = Reflect.getMetadata("injectable", dependency);
+    if (!isInjectable)
+      throw new Error(
+        `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
+      );
+
+    this.singletons.set(dependency, value);
   }
 
   private initiateDependency<T extends Constructor>(
