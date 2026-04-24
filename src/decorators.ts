@@ -4,6 +4,11 @@ import { AbstractConstructor, Constructor, Scope } from "./types";
 export const Injectable =
   ({ scope }: { scope?: Scope } = {}) =>
   <T extends Constructor>(constructor: T) => {
+    if (typeof Reflect.getMetadata !== "function")
+      throw new Error(
+        "reflect-metadata is not loaded. Import it at the entry point of your application before anything else.",
+      );
+
     validateParamTypes(constructor);
 
     Reflect.defineMetadata("injectable", true, constructor);
