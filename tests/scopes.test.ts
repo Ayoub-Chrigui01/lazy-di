@@ -143,3 +143,49 @@ test("Two separate singleton containers should not share instances", () => {
   expect(instance2).toBeInstanceOf(ServiceA);
   expect(instance1).not.toBe(instance2);
 });
+
+describe("Constant values", () => {
+  test("A dependency bound to a constant always resolves to that instance", () => {
+    @Injectable()
+    class ServiceA {}
+
+    const constantInstance = new ServiceA();
+    const container = new Container();
+    container.bindToConstantValue(ServiceA, constantInstance);
+
+    const instance1 = container.get(ServiceA);
+    const instance2 = container.get(ServiceA);
+
+    expect(instance1).toBe(constantInstance);
+    expect(instance2).toBe(constantInstance);
+  });
+
+  test("A dependency bound to a constant and has a transient scope still resolves to the constant instance", () => {
+    @Injectable({
+      scope: "transient",
+    })
+    class ServiceA {}
+
+    const constantInstance = new ServiceA();
+    const container = new Container();
+    container.bindToConstantValue(ServiceA, constantInstance);
+
+    const instance1 = container.get(ServiceA);
+    const instance2 = container.get(ServiceA);
+
+    expect(instance1).toBe(constantInstance);
+    expect(instance2).toBe(constantInstance);
+  });
+
+  test("A dependency bound to a constant value without the @Injectable() decorator should throw error", () => {
+    class ServiceA {}
+
+    const constantInstance = new ServiceA();
+    const container = new Container();
+    expect(() =>
+      container.bindToConstantValue(ServiceA, constantInstance),
+    ).toThrow(
+      `Cannot resolve dependency ServiceA. Make sure it is decorated with @Injectable().`,
+    );
+  });
+});
