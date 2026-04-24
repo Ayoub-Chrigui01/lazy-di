@@ -6,7 +6,7 @@ test("When no default scope is provided, default scope is `transient`", () => {
   @Injectable()
   class ServiceA {}
 
-  const container = new Container();
+  const container = Container.create();
   const instance1 = container.get(ServiceA);
   const instance2 = container.get(ServiceA);
 
@@ -19,7 +19,7 @@ describe("When default scope is set to `singleton`", () => {
   let container: Container;
 
   beforeEach(() => {
-    container = new Container({
+    container = Container.create({
       defaultScope: "singleton",
     });
   });
@@ -55,7 +55,7 @@ describe("When default scope is set to `transient`", () => {
   let container: Container;
 
   beforeEach(() => {
-    container = new Container({
+    container = Container.create({
       defaultScope: "transient",
     });
   });
@@ -98,7 +98,7 @@ describe("Abstract classes", () => {
     @Implements(Repo)
     class SqlRepo implements Repo {}
 
-    const container = new Container();
+    const container = Container.create();
     const instance1 = container.get(Repo);
     const instance2 = container.get(Repo);
 
@@ -117,7 +117,7 @@ describe("Abstract classes", () => {
     @Implements(Repo)
     class SqlRepo implements Repo {}
 
-    const container = new Container();
+    const container = Container.create();
     const instance1 = container.get(Repo);
     const instance2 = container.get(Repo);
 
@@ -133,8 +133,8 @@ test("Two separate singleton containers should not share instances", () => {
   })
   class ServiceA {}
 
-  const container1 = new Container();
-  const container2 = new Container();
+  const container1 = Container.create();
+  const container2 = Container.create();
 
   const instance1 = container1.get(ServiceA);
   const instance2 = container2.get(ServiceA);
@@ -150,7 +150,7 @@ describe("Constant values", () => {
     class ServiceA {}
 
     const constantInstance = new ServiceA();
-    const container = new Container();
+    const container = Container.create();
     container.bindToConstantValue(ServiceA, constantInstance);
 
     const instance1 = container.get(ServiceA);
@@ -165,7 +165,7 @@ describe("Constant values", () => {
     class ServiceA {}
 
     const constantInstance = new ServiceA();
-    const container = new Container({ defaultScope: "transient" });
+    const container = Container.create({ defaultScope: "transient" });
     container.bindToConstantValue(ServiceA, constantInstance);
 
     const instance1 = container.get(ServiceA);
@@ -179,7 +179,7 @@ describe("Constant values", () => {
     class ServiceA {}
 
     const constantInstance = new ServiceA();
-    const container = new Container();
+    const container = Container.create();
     expect(() =>
       container.bindToConstantValue(ServiceA, constantInstance),
     ).toThrow(
@@ -194,7 +194,7 @@ describe("Constant values", () => {
     class ServiceA {}
 
     const constantInstance = new ServiceA();
-    const container = new Container();
+    const container = Container.create();
     expect(() =>
       container.bindToConstantValue(ServiceA, constantInstance),
     ).toThrow(

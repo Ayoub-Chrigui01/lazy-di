@@ -7,7 +7,7 @@ describe("Success", () => {
     @Injectable()
     class Logger {}
 
-    const container = new Container();
+    const container = Container.create();
     const logger = container.get(Logger);
 
     expect(logger).toBeInstanceOf(Logger);
@@ -22,7 +22,7 @@ describe("Success", () => {
       constructor(public logger: Logger) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const userService = container.get(UserService);
 
     expect(userService).toBeInstanceOf(UserService);
@@ -44,7 +44,7 @@ describe("Success", () => {
       ) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const userService = container.get(UserService);
 
     expect(userService).toBeInstanceOf(UserService);
@@ -66,7 +66,7 @@ describe("Success", () => {
       constructor(public userRepository: UserRepository) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const userService = container.get(UserService);
 
     expect(userService).toBeInstanceOf(UserService);
@@ -86,7 +86,7 @@ describe("Success", () => {
     @Injectable()
     class ExtendedService extends BaseService {}
 
-    const container = new Container();
+    const container = Container.create();
     const extendedService = container.get(ExtendedService);
 
     expect(extendedService).toBeInstanceOf(ExtendedService);
@@ -116,7 +116,7 @@ describe("Success", () => {
       }
     }
 
-    const container = new Container();
+    const container = Container.create();
     const extendedService = container.get(ExtendedService);
 
     expect(extendedService).toBeInstanceOf(ExtendedService);
@@ -140,7 +140,7 @@ describe("Failure", () => {
       constructor(public logger: Logger) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
 
     expect(() => container.get(UserService)).toThrow(
       "Cannot resolve dependency Logger. Make sure it is decorated with @Injectable().",
@@ -150,7 +150,7 @@ describe("Failure", () => {
   test("Must throw an error when a dependency with zero dependencies is not decorated with @Injectable()", () => {
     class Config {}
 
-    const container = new Container();
+    const container = Container.create();
 
     expect(() => container.get(Config)).toThrow(
       "Cannot resolve dependency Config. Make sure it is decorated with @Injectable().",
