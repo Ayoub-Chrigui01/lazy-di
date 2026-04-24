@@ -4,8 +4,14 @@ export class Container {
   private defaultScope: Scope;
   private singletons = new Map<Constructor, unknown>();
 
-  constructor({ defaultScope = "transient" }: { defaultScope?: Scope } = {}) {
+  private constructor({
+    defaultScope = "transient",
+  }: { defaultScope?: Scope } = {}) {
     this.defaultScope = defaultScope;
+  }
+
+  static create(options?: { defaultScope?: Scope }): Container {
+    return new Container(options);
   }
 
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
@@ -58,6 +64,8 @@ export class Container {
 
     this.singletons.set(dependency, value);
   }
+
+  // createChildContainer(): Container {}
 
   private initiateDependency<T extends Constructor>(
     dependency: T,

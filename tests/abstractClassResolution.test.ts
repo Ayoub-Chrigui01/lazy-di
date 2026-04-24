@@ -11,7 +11,7 @@ describe("Success", () => {
     @Implements(Repository)
     class SqlRepository implements Repository {}
 
-    const container = new Container();
+    const container = Container.create();
     const repository = container.get(Repository);
 
     expect(repository).toBeInstanceOf(SqlRepository);
@@ -30,7 +30,7 @@ describe("Success", () => {
       constructor(public repository: Repository) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const userService = container.get(UserService);
 
     expect(userService).toBeInstanceOf(UserService);
@@ -60,7 +60,7 @@ describe("Success", () => {
       constructor(public repository: Repository) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const userService = container.get(UserService);
 
     expect(userService).toBeInstanceOf(UserService);
@@ -86,7 +86,7 @@ describe("Success", () => {
       constructor(public logger: Logger) {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const repository = container.get(SqlRepository);
 
     expect(repository).toBeInstanceOf(SqlRepository);
@@ -103,7 +103,7 @@ describe("Success", () => {
       constructor() {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const repository = container.get(Repository);
 
     expect(repository).toBeInstanceOf(SqlRepository);
@@ -125,7 +125,7 @@ describe("Success", () => {
       constructor() {}
     }
 
-    const container = new Container();
+    const container = Container.create();
     const repository = container.get(Repository);
 
     expect(repository).toBeInstanceOf(MongoRepository);
@@ -149,7 +149,7 @@ describe("Failure", () => {
     @Abstract()
     abstract class Repository {}
 
-    const container = new Container();
+    const container = Container.create();
     expect(() => container.get(Repository)).toThrow(
       `Cannot resolve dependency Repository. No implementation found.`,
     );
