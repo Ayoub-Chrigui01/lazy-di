@@ -50,6 +50,12 @@ export class Container {
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
       );
 
+    const scope = Reflect.getMetadata("scope", dependency);
+    if (scope === "transient")
+      throw new Error(
+        `Cannot bind dependency ${dependency.name} to a constant value. A dependency bound to a constant value cannot have an explicit transient scope.`,
+      );
+
     this.singletons.set(dependency, value);
   }
 

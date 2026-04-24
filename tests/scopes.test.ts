@@ -161,13 +161,11 @@ describe("Constant values", () => {
   });
 
   test("A dependency bound to a constant and has a transient scope still resolves to the constant instance", () => {
-    @Injectable({
-      scope: "transient",
-    })
+    @Injectable()
     class ServiceA {}
 
     const constantInstance = new ServiceA();
-    const container = new Container();
+    const container = new Container({ defaultScope: "transient" });
     container.bindToConstantValue(ServiceA, constantInstance);
 
     const instance1 = container.get(ServiceA);
@@ -186,6 +184,21 @@ describe("Constant values", () => {
       container.bindToConstantValue(ServiceA, constantInstance),
     ).toThrow(
       `Cannot resolve dependency ServiceA. Make sure it is decorated with @Injectable().`,
+    );
+  });
+
+  test("A dependency that is explicitly set to transient but is bound to a constant value should throw an error", () => {
+    @Injectable({
+      scope: "transient",
+    })
+    class ServiceA {}
+
+    const constantInstance = new ServiceA();
+    const container = new Container();
+    expect(() =>
+      container.bindToConstantValue(ServiceA, constantInstance),
+    ).toThrow(
+      `Cannot bind dependency ServiceA to a constant value. A dependency bound to a constant value cannot have an explicit transient scope.`,
     );
   });
 });
