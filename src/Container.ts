@@ -1,4 +1,9 @@
-import { AnyConstructor, Constructor, Scope } from "./types";
+import {
+  AbstractConstructor,
+  AnyConstructor,
+  Constructor,
+  Scope,
+} from "./types";
 
 export class Container {
   private singletons = new Map<Constructor, unknown>();
@@ -65,6 +70,18 @@ export class Container {
       );
 
     this.singletons.set(dependency, value);
+  }
+
+  getMembersOf<T extends AbstractConstructor>(abstractClass: T): T[] {
+    const isAbstract = Reflect.getMetadata("abstract", abstractClass);
+    if (!isAbstract)
+      throw new Error(
+        `Not abstract can't have members. ${abstractClass.name} must be decorated with @Abstract() before it can have members`,
+      );
+
+    const members = Reflect.getMetadata("members", abstractClass);
+
+    return members ?? [];
   }
 
   private findInstanceInSingletons<T extends Constructor>(

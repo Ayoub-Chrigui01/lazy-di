@@ -43,3 +43,16 @@ export const Abstract =
   <T extends AbstractConstructor>(constructor: T) => {
     Reflect.defineMetadata("abstract", true, constructor);
   };
+
+export const RegisterAs =
+  <U extends AbstractConstructor>(abstractClass: U) =>
+  <T extends Constructor<InstanceType<U>>>(constructor: T) => {
+    const isAbstract = Reflect.getMetadata("abstract", abstractClass);
+    if (!isAbstract)
+      throw new Error(
+        `${constructor.name} cannot be a member of ${abstractClass.name}. ${abstractClass.name} must be decorated with @Abstract() before it can have members`,
+      );
+
+    const members = Reflect.getMetadata("members", abstractClass) ?? [];
+    Reflect.defineMetadata("members", [...members, constructor], abstractClass);
+  };
