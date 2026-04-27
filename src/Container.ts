@@ -1,3 +1,4 @@
+import { scanFiles, ScannerOptions, ScanResult } from "./scanner";
 import {
   AbstractConstructor,
   AnyConstructor,
@@ -15,6 +16,10 @@ export class Container {
 
   static create(options?: { defaultScope?: Scope }): Container {
     return new Container(options?.defaultScope ?? "transient", null);
+  }
+
+  async scan(options: ScannerOptions): Promise<ScanResult> {
+    return await scanFiles(options);
   }
 
   createChildContainer(): Container {
