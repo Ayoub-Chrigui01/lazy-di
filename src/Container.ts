@@ -8,6 +8,7 @@ import {
 
 export class Container {
   private singletons = new Map<Constructor, unknown>();
+  private snapshotSingletons: Map<Constructor, unknown> | null = null;
 
   private constructor(
     private defaultScope: Scope,
@@ -75,6 +76,17 @@ export class Container {
       );
 
     this.singletons.set(dependency, value);
+  }
+
+  snapshot(): void {
+    this.snapshotSingletons = new Map(this.singletons);
+  }
+
+  restore(): void {
+    if (!this.snapshotSingletons)
+      throw new Error("No snapshot found to restore");
+
+    this.singletons = new Map(this.snapshotSingletons);
   }
 
   getMembersOf<T extends AbstractConstructor>(abstractClass: T): T[] {
