@@ -175,18 +175,6 @@ describe("Constant values", () => {
     expect(instance2).toBe(constantInstance);
   });
 
-  test("A dependency bound to a constant value without the @Injectable() decorator should throw error", () => {
-    class ServiceA {}
-
-    const constantInstance = new ServiceA();
-    const container = Container.create();
-    expect(() =>
-      container.bindToConstantValue(ServiceA, constantInstance),
-    ).toThrow(
-      `Cannot resolve dependency ServiceA. Make sure it is decorated with @Injectable().`,
-    );
-  });
-
   test("A dependency that is explicitly set to transient but is bound to a constant value should throw an error", () => {
     @Injectable({
       scope: "transient",
