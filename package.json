@@ -1,17 +1,36 @@
 {
-  "name": "container",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@chrigui/lazy-di",
+  "version": "0.1.1",
+  "description": "Zero-ceremony dependency injection for TypeScript",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "test": "vitest"
+    "build": "tsup",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "peerDependencies": {
+    "reflect-metadata": ">=0.1.13"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.5",
     "reflect-metadata": "^0.2.2",
+    "tsup": "^8.5.1",
     "typescript": "^6.0.2",
     "vitest": "^4.1.4"
   },
