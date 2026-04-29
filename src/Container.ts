@@ -63,12 +63,6 @@ export class Container {
     dependency: T,
     value: InstanceType<T>,
   ): void {
-    const isInjectable = Reflect.getMetadata("injectable", dependency);
-    if (!isInjectable)
-      throw new Error(
-        `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
-      );
-
     const scope = Reflect.getMetadata("scope", dependency);
     if (scope === "transient")
       throw new Error(
