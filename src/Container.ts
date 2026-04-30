@@ -30,7 +30,7 @@ export class Container {
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
     const isAbstract = !this.isConcrete(dependency);
     if (isAbstract) {
-      const implementation = Reflect.getMetadata("implements", dependency);
+      const implementation = Reflect.getOwnMetadata("implements", dependency);
 
       if (!implementation)
         throw new Error(
@@ -43,7 +43,7 @@ export class Container {
     const cachedInstance = this.findInstanceInSingletons(dependency);
     if (cachedInstance !== undefined) return cachedInstance;
 
-    const isInjectable = Reflect.getMetadata("injectable", dependency);
+    const isInjectable = Reflect.getOwnMetadata("injectable", dependency);
     if (!isInjectable)
       throw new Error(
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
@@ -52,7 +52,7 @@ export class Container {
     const instance = this.initiateDependency(dependency);
 
     const dependencyScope: Scope =
-      Reflect.getMetadata("scope", dependency) ?? this.defaultScope;
+      Reflect.getOwnMetadata("scope", dependency) ?? this.defaultScope;
     if (dependencyScope === "singleton")
       this.getRoot().singletons.set(dependency, instance);
 
@@ -63,7 +63,7 @@ export class Container {
     dependency: T,
     value: InstanceType<T>,
   ): void {
-    const scope = Reflect.getMetadata("scope", dependency);
+    const scope = Reflect.getOwnMetadata("scope", dependency);
     if (scope === "transient")
       throw new Error(
         `Cannot bind dependency ${dependency.name} to a constant value. A dependency bound to a constant value cannot have an explicit transient scope.`,
@@ -84,13 +84,13 @@ export class Container {
   }
 
   getMembersOf<T extends AbstractConstructor>(abstractClass: T): T[] {
-    const isAbstract = Reflect.getMetadata("abstract", abstractClass);
+    const isAbstract = Reflect.getOwnMetadata("abstract", abstractClass);
     if (!isAbstract)
       throw new Error(
         `Not abstract can't have members. ${abstractClass.name} must be decorated with @Abstract() before it can have members`,
       );
 
-    const members = Reflect.getMetadata("members", abstractClass);
+    const members = Reflect.getOwnMetadata("members", abstractClass);
 
     return members ?? [];
   }
@@ -125,6 +125,6 @@ export class Container {
   private isConcrete<T>(
     dependency: AnyConstructor<T>,
   ): dependency is Constructor<T> {
-    return !Reflect.getMetadata("abstract", dependency);
+    return !Reflect.getOwnMetadata("abstract", dependency);
   }
 }

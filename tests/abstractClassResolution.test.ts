@@ -130,6 +130,19 @@ describe("Success", () => {
 
     expect(repository).toBeInstanceOf(MongoRepository);
   });
+
+  test("Resolves the correct implementation even if the implementation extends the abstract class", () => {
+    @Abstract()
+    abstract class FileManager {}
+
+    @Injectable()
+    class LocalFileManager extends FileManager {}
+
+    const container = Container.create();
+    const fileManager = container.get(LocalFileManager);
+
+    expect(fileManager).toBeInstanceOf(LocalFileManager);
+  });
 });
 
 describe("Failure", () => {
