@@ -39,7 +39,7 @@ export async function scanFiles(options: ScannerOptions): Promise<ScanResult> {
       const hasMarker = DEFAULT_MARKERS.some((m) => content.includes(m));
       if (!hasMarker) return "skipped" as const;
 
-      require(file);
+      await import(file);
       return "imported" as const;
     }),
   );
