@@ -1,6 +1,5 @@
 import { glob } from "tinyglobby";
 import { readFile } from "node:fs/promises";
-import { pathToFileURL } from "node:url";
 
 export type ScannerOptions = {
   rootDir: string;
@@ -40,7 +39,7 @@ export async function scanFiles(options: ScannerOptions): Promise<ScanResult> {
       const hasMarker = DEFAULT_MARKERS.some((m) => content.includes(m));
       if (!hasMarker) return "skipped" as const;
 
-      await import(pathToFileURL(file).href);
+      require(file);
       return "imported" as const;
     }),
   );
