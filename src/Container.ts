@@ -83,7 +83,9 @@ export class Container {
     this.singletons = new Map(this.snapshotSingletons);
   }
 
-  getMembersOf<T extends AbstractConstructor>(abstractClass: T): T[] {
+  getMembersOf<T extends AbstractConstructor>(
+    abstractClass: T,
+  ): Constructor<InstanceType<T>>[] {
     const isAbstract = Reflect.getOwnMetadata("abstract", abstractClass);
     if (!isAbstract)
       throw new Error(
