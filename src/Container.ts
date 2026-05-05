@@ -1,5 +1,12 @@
 import { scanFiles, ScannerOptions, ScanResult } from "./scanner";
 import {
+  IMPLEMENTS_SYMBOL,
+  SCOPE_SYMBOL,
+  INJECTABLE_SYMBOL,
+  ABSTRACT_SYMBOL,
+  MEMBERS_SYMBOL,
+} from "./symbols";
+import {
   AbstractConstructor,
   AnyConstructor,
   Constructor,
@@ -30,7 +37,10 @@ export class Container {
   get<T extends AnyConstructor>(dependency: T): InstanceType<T> {
     const isAbstract = !this.isConcrete(dependency);
     if (isAbstract) {
-      const implementation = Reflect.getOwnMetadata("implements", dependency);
+      const implementation = Reflect.getOwnMetadata(
+        IMPLEMENTS_SYMBOL,
+        dependency,
+      );
 
       if (!implementation)
         throw new Error(
@@ -43,7 +53,7 @@ export class Container {
     const cachedInstance = this.findInstanceInSingletons(dependency);
     if (cachedInstance !== undefined) return cachedInstance;
 
-    const isInjectable = Reflect.getOwnMetadata("injectable", dependency);
+    const isInjectable = Reflect.getOwnMetadata(INJECTABLE_SYMBOL, dependency);
     if (!isInjectable)
       throw new Error(
         `Cannot resolve dependency ${dependency.name}. Make sure it is decorated with @Injectable().`,
@@ -52,7 +62,7 @@ export class Container {
     const instance = this.initiateDependency(dependency);
 
     const dependencyScope: Scope =
-      Reflect.getOwnMetadata("scope", dependency) ?? this.defaultScope;
+      Reflect.getOwnMetadata(SCOPE_SYMBOL, dependency) ?? this.defaultScope;
     if (dependencyScope === "singleton")
       this.getRoot().singletons.set(dependency, instance);
 
@@ -63,7 +73,7 @@ export class Container {
     dependency: T,
     value: InstanceType<T>,
   ): void {
-    const scope = Reflect.getOwnMetadata("scope", dependency);
+    const scope = Reflect.getOwnMetadata(SCOPE_SYMBOL, dependency);
     if (scope === "transient")
       throw new Error(
         `Cannot bind dependency ${dependency.name} to a constant value. A dependency bound to a constant value cannot have an explicit transient scope.`,
@@ -86,13 +96,13 @@ export class Container {
   getMembersOf<T extends AbstractConstructor>(
     abstractClass: T,
   ): Constructor<InstanceType<T>>[] {
-    const isAbstract = Reflect.getOwnMetadata("abstract", abstractClass);
+    const isAbstract = Reflect.getOwnMetadata(ABSTRACT_SYMBOL, abstractClass);
     if (!isAbstract)
       throw new Error(
         `Not abstract can't have members. ${abstractClass.name} must be decorated with @Abstract() before it can have members`,
       );
 
-    const members = Reflect.getOwnMetadata("members", abstractClass);
+    const members = Reflect.getOwnMetadata(MEMBERS_SYMBOL, abstractClass);
 
     return members ?? [];
   }
@@ -127,6 +137,6 @@ export class Container {
   private isConcrete<T>(
     dependency: AnyConstructor<T>,
   ): dependency is Constructor<T> {
-    return !Reflect.getOwnMetadata("abstract", dependency);
+    return !Reflect.getOwnMetadata(ABSTRACT_SYMBOL, dependency);
   }
 }
