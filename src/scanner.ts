@@ -2,7 +2,8 @@ import { glob } from "tinyglobby";
 import { readFile } from "node:fs/promises";
 
 export type ScannerOptions = {
-  rootDir: string;
+  rootDir: string | string[];
+  exclude?: string | string[];
 };
 
 export interface ScanResult {
@@ -27,9 +28,14 @@ export async function scanFiles(options: ScannerOptions): Promise<ScanResult> {
     (root) => `${root}/**/*.{${DEFAULT_EXTENSIONS.join(",")}}`,
   );
 
+  const userExclude = options.exclude
+    ? Array.isArray(options.exclude)
+      ? options.exclude
+      : [options.exclude]
+    : [];
+
   const files = await glob(patterns, {
-    cwd: options.rootDir,
-    ignore: DEFAULT_EXCLUDE,
+    ignore: [...DEFAULT_EXCLUDE, ...userExclude],
     absolute: true,
   });
 
