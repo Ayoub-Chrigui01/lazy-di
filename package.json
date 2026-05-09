@@ -1,13 +1,19 @@
 {
   "name": "@chrigui/lazy-di",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Zero-ceremony dependency injection for TypeScript",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "files": [
