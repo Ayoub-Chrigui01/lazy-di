@@ -41,7 +41,7 @@ Lazy-di eliminates that file entirely. Dependencies are registered automatically
 ## Installation
 
 ```bash
-npm install @chrigui/lazy-di reflect-metadata
+npm install @lazy-di/core reflect-metadata
 ```
 
 `reflect-metadata` is a peer dependency. It must be imported **once**, as the **first line** of your application entry point:
@@ -49,7 +49,7 @@ npm install @chrigui/lazy-di reflect-metadata
 ```typescript
 // main.ts — must be first
 import "reflect-metadata";
-import { Container } from "@chrigui/lazy-di";
+import { Container } from "@lazy-di/core";
 ```
 
 ### tsconfig requirements
@@ -235,7 +235,7 @@ In large projects, manually importing every file to trigger decorator registrati
 
 ```typescript
 import "reflect-metadata";
-import { Container } from "@chrigui/lazy-di";
+import { Container } from "@lazy-di/core";
 
 const container = Container.create();
 
