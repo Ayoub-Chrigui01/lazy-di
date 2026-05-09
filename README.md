@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
 [![CI](https://github.com/Ayoub-Chrigui01/lazy-di/actions/workflows/ci.yml/badge.svg)](https://github.com/Ayoub-Chrigui01/lazy-di/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/Ayoub-Chrigui01/lazy-di/graph/badge.svg?token=015MLCJ5Z5)](https://codecov.io/github/Ayoub-Chrigui01/lazy-di)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Zero-ceremony dependency injection for TypeScript.**
