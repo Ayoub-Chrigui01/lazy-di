@@ -1,4 +1,4 @@
-# Lazy-di
+# lazy-di
 
 [![npm version](https://img.shields.io/npm/v/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
@@ -27,13 +27,51 @@ const repo = container.get(UserRepository); // Database injected automatically
 
 ---
 
-## Why Lazy-di
+## Why lazy-di
 
-Most TypeScript DI containers make you maintain a separate binding file where you map tokens to implementations. As your application grows, this file becomes a source of merge conflicts, cognitive overhead, and ceremony that adds no business value.
+Most TypeScript DI containers require a central binding file. In InversifyJS it looks like this:
 
-Lazy-di eliminates that file entirely. Dependencies are registered automatically through decorators, and resolved using class constructors as tokens — no strings, no Symbols, no manual wiring.
+```typescript
+// container.ts — the file everyone touches in every PR
+const TYPES = {
+  Database: Symbol("Database"),
+  UserRepository: Symbol("UserRepository"),
+  OrderRepository: Symbol("OrderRepository"),
+  PaymentGateway: Symbol("PaymentGateway"),
+  NotificationService: Symbol("NotificationService"),
+  OrderService: Symbol("OrderService"),
+  App: Symbol("App"),
+};
 
-|                       | Lazy-di | InversifyJS | tsyringe | TypeDI |
+const container = new Container();
+container.bind<Database>(TYPES.Database).to(Database).inSingletonScope();
+container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository);
+container.bind<OrderRepository>(TYPES.OrderRepository).to(OrderRepository);
+container.bind<PaymentGateway>(TYPES.PaymentGateway).to(StripeGateway);
+container
+  .bind<NotificationService>(TYPES.NotificationService)
+  .to(NotificationService);
+container.bind<OrderService>(TYPES.OrderService).to(OrderService);
+container.bind<App>(TYPES.App).to(App);
+```
+
+Every new class means a new Symbol and a new `bind()` line. As the app grows, this file becomes a permanent source of merge conflicts.
+
+With lazy-di, this file doesn't exist. The equivalent setup is just your entry point:
+
+```typescript
+// main.ts — the only wiring you write
+import "reflect-metadata";
+import { Container } from "@lazy-di/core";
+
+const container = Container.create();
+const app = container.get(App);
+app.run();
+```
+
+Dependencies are registered through decorators on the classes themselves. The container resolves them automatically.
+
+|                       | lazy-di | InversifyJS | tsyringe | TypeDI |
 | --------------------- | ------- | ----------- | -------- | ------ |
 | Manual binding file   | ✗       | ✓           | ✓        | ✓      |
 | String/Symbol tokens  | ✗       | ✓           | ✓        | ✓      |
@@ -73,6 +111,58 @@ Both options are required. Without `emitDecoratorMetadata`, TypeScript does not 
 
 ---
 
+## Getting started
+
+Here is a minimal but realistic app wiring a repository and a service together.
+
+```typescript
+// database.ts
+@Injectable({ scope: "singleton" })
+class Database {
+  query(sql: string, params?: unknown[]) {
+    // ...
+  }
+}
+```
+
+```typescript
+// user-repository.ts
+@Injectable()
+class UserRepository {
+  constructor(private db: Database) {}
+
+  findById(id: string) {
+    return this.db.query("SELECT * FROM users WHERE id = ?", [id]);
+  }
+}
+```
+
+```typescript
+// user-service.ts
+@Injectable()
+class UserService {
+  constructor(private users: UserRepository) {}
+
+  getUser(id: string) {
+    return this.users.findById(id);
+  }
+}
+```
+
+```typescript
+// main.ts — the entire wiring
+import "reflect-metadata";
+import { Container } from "@lazy-di/core";
+
+const container = Container.create();
+const userService = container.get(UserService);
+// Database and UserRepository are resolved and injected automatically
+```
+
+`Database` is singleton — one instance is shared across every class that depends on it. `UserRepository` and `UserService` are transient — a fresh instance is created each time they are resolved.
+
+---
+
 ## Core concepts
 
 ### `@Injectable()`
@@ -99,7 +189,7 @@ Classes without `@Injectable()` cannot be resolved — the container throws a de
 
 ### Scopes
 
-Lazy-di supports two scopes:
+lazy-di supports two scopes:
 
 - **`transient`** (default) — a new instance is created on every `container.get()` call
 - **`singleton`** — one instance is created per root container and reused for all subsequent calls
@@ -130,7 +220,7 @@ Class-level scope always takes precedence over the container default.
 
 ## Abstract classes as tokens
 
-Interfaces are erased at runtime — they cannot be used as injection tokens. Lazy-di solves this with abstract classes decorated with `@Abstract()`, which provides both a compile-time type contract and a runtime identity.
+Interfaces are erased at runtime — they cannot be used as injection tokens. lazy-di solves this with abstract classes decorated with `@Abstract()`, which provides both a compile-time type contract and a runtime identity.
 
 ```typescript
 @Abstract()
@@ -198,7 +288,7 @@ for (const Handler of handlers) {
 }
 ```
 
-`getMembersOf()` returns an array of constructors. You resolve each one individually, respecting their individual scopes.
+`getMembersOf()` returns an array of constructors, not instances. This is intentional — resolving each class individually lets the container respect each class's own scope. A handler registered as singleton will be reused; a transient one will get a fresh instance each time.
 
 ---
 
@@ -237,7 +327,7 @@ A class bound to a constant value cannot have an explicit `transient` scope — 
 
 ## Auto-discovery
 
-In large projects, manually importing every file to trigger decorator registration is impractical. Lazy-di provides a file scanner that dynamically imports all TypeScript files under a given directory at startup:
+In large projects, manually importing every file to trigger decorator registration is impractical. lazy-di provides a file scanner that dynamically imports all TypeScript files under a given directory at startup:
 
 ```typescript
 import "reflect-metadata";
@@ -264,7 +354,7 @@ const app = container.get(App);
 
 ## Error messages
 
-Lazy-di throws descriptive errors at the point of misconfiguration, not silently at runtime.
+lazy-di throws descriptive errors at the point of misconfiguration, not silently at runtime.
 
 | Scenario                                        | Error                                                                                                                                           |
 | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -299,6 +389,19 @@ Lazy-di throws descriptive errors at the point of misconfiguration, not silently
 | `@Abstract()`                           | Abstract class | Marks the class as a valid injection token.                      |
 | `@Implements(AbstractClass, { when? })` | Concrete class | Registers the class as the implementation of an abstract class.  |
 | `@RegisterAs(AbstractClass)`            | Concrete class | Registers the class as a member of an abstract class collection. |
+
+---
+
+## Contributing
+
+Contributions are welcome. Before opening a pull request:
+
+1. Fork the repo and create a branch from `main`.
+2. Run `npm test` to make sure all tests pass.
+3. Add tests for any new behaviour — coverage is currently at 100% and should stay there.
+4. Open a PR with a clear description of what changed and why.
+
+For bugs, open an issue first so we can align on the fix before you write code. For larger features, open a discussion issue before starting work.
 
 ---
 
