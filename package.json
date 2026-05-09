@@ -1,6 +1,6 @@
 {
   "name": "@lazy-di/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Zero-ceremony dependency injection for TypeScript",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,9 +31,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ayoub-Chrigui01/lazy-di"
+    "url": "https://github.com/ayoub-chrigui/lazy-di"
   },
-  "homepage": "https://github.com/Ayoub-Chrigui01/lazy-di#readme",
+  "homepage": "https://github.com/ayoub-chrigui/lazy-di#readme",
   "keywords": [
     "dependency-injection",
     "di",
