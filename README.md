@@ -1,5 +1,10 @@
 # lazy-di
 
+[![npm version](https://img.shields.io/npm/v/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
+[![npm downloads](https://img.shields.io/npm/dm/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
+[![CI](https://github.com/Ayoub-Chrigui01/lazy-di/actions/workflows/ci.yml/badge.svg)](https://github.com/Ayoub-Chrigui01/lazy-di/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Zero-ceremony dependency injection for TypeScript.**
 
 No manual bindings. No string tokens. Just decorate your classes and resolve.
