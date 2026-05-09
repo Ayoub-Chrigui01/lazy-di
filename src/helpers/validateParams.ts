@@ -37,7 +37,7 @@ export function validateParamTypes(target: Constructor): void {
     }
 
     if (UNRESOLVABLE_TOKENS.has(token)) {
-      const tokenName = (token as { name?: string }).name ?? String(token);
+      const tokenName = (token as { name: string }).name;
       throw new Error(
         `[${target.name}] cannot be registered: parameter at index ${i} resolved to '${tokenName}' at runtime.
 Interfaces, type aliases, 'any', 'unknown', and primitives are erased by TypeScript — use an abstract class instead.`,

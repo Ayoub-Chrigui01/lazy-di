@@ -1,4 +1,4 @@
-# lazy-di
+# Lazy-di
 
 [![npm version](https://img.shields.io/npm/v/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
