@@ -1,4 +1,7 @@
-# lazy-di
+<div align="center">
+
+<img src="assets/lazy-di.png" alt="lazy-di logo" width="150" />
+<h1>lazy-di</h1>
 
 [![npm version](https://img.shields.io/npm/v/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
 [![npm downloads](https://img.shields.io/npm/dm/@lazy-di/core)](https://www.npmjs.com/package/@lazy-di/core)
@@ -9,6 +12,8 @@
 **Zero-ceremony dependency injection for TypeScript.**
 
 No manual bindings. No string tokens. Just decorate your classes and resolve.
+
+</div>
 
 ```typescript
 @Injectable()
